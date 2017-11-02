@@ -44,3 +44,18 @@ For the part https://docs.docker.com/get-started/part2/#apppy , I typed:
 				- Once complete, the results of this upload are publicly available. If you log in to Docker Hub, you will see the new image there, with its pull command. See https://cloud.docker.com/swarm/brossierp/repository/docker/brossierp/get-started/general
 		- To pull and run the image from the remote repository: docker run -p 4000:80 brossierp/get-started:part2
 
+
+For https://docs.docker.com/get-started/part3/#introduction , I typed:
+	- created a new docker-compose.yml: This is a YAML file that defines how Docker containers should behave in production. Compose files like this are used to define applications with Docker, and can be uploaded to cloud providers using Docker Cloud, or on any hardware or cloud provider you choose with Docker Enterprise Edition.
+	- to make our node a swarm manager: docker swarm init
+	- to run it with app name set to getstartedlab: docker stack deploy -c docker-compose.yml getstartedlab
+	- to get the service ID for the one service in our application: docker service ls
+	- to list the tasks for our service: docker service ps getstartedlab_web
+		- tasks also show up if you just list all the containers on your system, though that will not be filtered by service: docker container ls -q
+	- to test: curl -4 http://localhost
+		- you’ll see the container ID change, demonstrating the load-balancing; with each request, one of the 5 tasks is chosen, in a round-robin fashion, to respond. The container IDs will match your output from the previous command (docker container ls -q).
+	- to scale up the app:
+		- amend the replicas value in docker-compose.yml, save the change, and re-run docker stack deploy -c docker-compose.yml getstartedlab
+		- Docker will do an in-place update, no need to tear the stack down first or kill any containers.
+	- to take down the app: docker stack rm getstartedlab
+	- to take down the swarm: docker swarm leave --force
