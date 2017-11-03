@@ -160,10 +160,18 @@ For https://docs.docker.com/get-started/part5/
 		- configure your shell to talk to myvm1:
 				docker-machine env myvm1
 				eval $(docker-machine env myvm1)
-				docker-machine list --> make sure you are connected to myvm1 as indicated by an asterisk next to it.
+				docker-machine ls --> make sure you are connected to myvm1 as indicated by an asterisk next to it.
 		- re-run the docker stack deploy command on the manager:
 				docker stack deploy -c docker-compose.yml getstartedlab
-		- 
-
-
-
+		- list the running tasks: docker stack ps getstartedlab 
+				- The single copy of visualizer is running on the manager myvm1 as you expect.
+				- And the 5 instances of web are spread out across the swarm. 
+		- verify you can access the service called web:
+				- to contact app on myvm1: curl http://192.168.99.100:80
+				- to contact app on myvm2: curl http://192.168.99.101:80
+		- verify you can access the service called visualizer:
+				- on myvm1: open Chrome at http://192.168.99.100:8080
+				- on myvm2: open Chrome at http://192.168.99.101:8080
+				--> you can verify that visualizer is running ONLY on the manager myvm1.
+				- The visualizer is a standalone service that can run in any app that includes it in the stack. It doesn’t depend on anything else. Now let’s create a service that does have a dependency: the Redis service that will provide a visitor counter.
+				
