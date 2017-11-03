@@ -1,8 +1,5 @@
 # dockerWork
-Work related to Docker training.
-
-
-I followed https://docs.docker.com/get-started/
+Work related to Docker training done following https://docs.docker.com/get-started/
 
 
 For the part https://docs.docker.com/get-started/part2/#apppy , I typed:
@@ -152,6 +149,21 @@ For https://docs.docker.com/get-started/part4/ (we deploy the application onto a
 		- to restart Docker machines:
 				- If you shut down your local host, Docker machines will stop running. You can check the status of machines with: docker-machine ls
 				- to restart a machine that has stopped: docker-machine start <machine-name>
-				
+
+
+For https://docs.docker.com/get-started/part5/
+	- A stack is a group of inter-related services that share dependencies, and can be orchestrated and scaled together. A single stack is capable of defining and coordinating the functionality of an entire application (though very complex applications may want to use multiple stacks).
+	- Some good news: you have technically been working with stacks since part 3, when you created a Compose file and used docker stack deploy. But that was a single service stack running on a single host, which is not usually what takes place in production. Here, you will take what you’ve learned, make multiple services relate to each other, and run them on multiple machines.
+	- Add a new service and redeploy:
+		- edit docker-compose.yml and add a section for visualizer:
+				- The only thing new here is the peer service to web, named visualizer. You’ll see two new things here: a volumes key, giving the visualizer access to the host’s socket file for Docker, and a placement key, ensuring that this service only ever runs on a swarm manager – never a worker. That is because this container, built from an open source project created by Docker, displays Docker services running on a swarm in a diagram.
+		- configure your shell to talk to myvm1:
+				docker-machine env myvm1
+				eval $(docker-machine env myvm1)
+				docker-machine list --> make sure you are connected to myvm1 as indicated by an asterisk next to it.
+		- re-run the docker stack deploy command on the manager:
+				docker stack deploy -c docker-compose.yml getstartedlab
+		- 
+
 
 
