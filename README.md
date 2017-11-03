@@ -202,4 +202,8 @@ For https://docs.docker.com/get-started/part5/
 				- on myvm1: open Chrome at http://192.168.99.100:8080
 				- on myvm2: open Chrome at http://192.168.99.101:8080
 				--> verify that visualizer and redis only appear under the manager myvm1.
-				
+
+
+For https://docs.docker.com/get-started/part6/	
+	- I did not complete this as for now, only need to build up knowledge to speed up development locally.
+	
