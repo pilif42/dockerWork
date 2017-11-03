@@ -174,4 +174,32 @@ For https://docs.docker.com/get-started/part5/
 				- on myvm2: open Chrome at http://192.168.99.101:8080
 				--> you can verify that visualizer is running ONLY on the manager myvm1.
 				- The visualizer is a standalone service that can run in any app that includes it in the stack. It doesn’t depend on anything else. Now let’s create a service that does have a dependency: the Redis service that will provide a visitor counter.
+	- Add the Redis service (a Redis database for storing app data):
+		- edit docker-compose.yml and add a section for redis
+				- Most importantly, there are a couple of things in the redis specification that make data persist between deployments of this stack:
+					- redis always runs on the manager, so it’s always using the same filesystem.
+					- redis accesses an arbitrary directory in the host’s file system as /data inside the container, which is where Redis stores data.
+					- Together, this is creating a “source of truth” in your host’s physical filesystem for the Redis data. Without this, Redis would store its data in /data inside the container’s filesystem, which would get wiped out if that container were ever redeployed.
+					- This source of truth has two components: 
+						- The placement constraint you put on the Redis service, ensuring that it always uses the same host.
+						- The volume you created that lets the container access ./data (on the host) as /data (inside the Redis container). While containers come and go, the files stored on ./data on the specified host will persist, enabling continuity.
+		- create a ./data directory on the manager: docker-machine ssh myvm1 "mkdir ./data"
+		- configure your shell to talk to myvm1:
+				docker-machine env myvm1
+				eval $(docker-machine env myvm1)
+				docker-machine ls --> shows the * next to myvm1 so all good.
+		- deploy again: docker stack deploy -c docker-compose.yml getstartedlab
+		- verify services have been deployed: docker service ls
+				ID                  NAME                       MODE                REPLICAS            IMAGE                             PORTS
+				nxxz9ga51xyu        getstartedlab_redis        replicated          1/1                 redis:latest                      *:6379->6379/tcp
+				lcqby0nscojy        getstartedlab_visualizer   replicated          1/1                 dockersamples/visualizer:stable   *:8080->8080/tcp
+				ovmn7zqklpig        getstartedlab_web          replicated          5/5                 brossierp/get-started:part2       *:80->80/tcp
+		- verify you can access the service called web and that redis is now working (see the nb of Visits):
+				- to contact app on myvm1: curl http://192.168.99.100:80
+						<h3>Hello World!</h3><b>Hostname:</b> b0874d43dbe7<br/><b>Visits:</b> 2
+				- to contact app on myvm2: curl http://192.168.99.101:80
+		- verify you can access the service called visualizer:
+				- on myvm1: open Chrome at http://192.168.99.100:8080
+				- on myvm2: open Chrome at http://192.168.99.101:8080
+				--> verify that visualizer and redis only appear under the manager myvm1.
 				
